@@ -38,6 +38,17 @@ for i in number_list:
   r = requests.get(url)
   r.encoding = r.apparent_encoding
   html_soup = BeautifulSoup(r.text, 'html.parser')
+
+  #各リストの作成
+  race_list = []
+  weather_list = []
+  popular_list = []
+  rank_list = []
+  jockey_list = []
+  distance_list = []
+  stage_list = []
+  weight_list = []
+
   if i in [2019105283, 2019104740, 2018103559, 2020103532]:
     df = pd.read_html(url)[4]
   else:
@@ -45,3 +56,15 @@ for i in number_list:
   df = df.drop(columns = ["日付","開催","R","映 像","頭 数","枠 番","馬 番","オ ッ ズ","斤 量","馬場 指数","タイム","ﾀｲﾑ 指数","厩舎 ｺﾒﾝﾄ","備考","着差","通過","ペース","上り","勝ち馬 (2着馬)","賞金"])
   df = df.dropna(how='any')
   print(df)
+  for _, row in df.iterrows():
+    race_list.append(row["レース名"])
+    weather_list.append(row["天 気"])
+    popular_list.append(row["人 気"])
+    rank_list.append(row["着 順"])
+    jockey_list.append(row["騎手"])
+    distance_list.append(row["距離"])
+    stage_list.append(row["馬 場"])
+    weight_list.append(row["馬体重"])
+
+  all_list = list(zip(race_list, weather_list, popular_list, rank_list, jockey_list,distance_list, stage_list,weight_list))
+  print(all_list)
