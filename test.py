@@ -55,7 +55,7 @@ for i in number_list:
     df = pd.read_html(url)[3]
   df = df.drop(columns = ["日付","開催","R","映 像","頭 数","枠 番","馬 番","オ ッ ズ","斤 量","馬場 指数","タイム","ﾀｲﾑ 指数","厩舎 ｺﾒﾝﾄ","備考","着差","通過","ペース","上り","勝ち馬 (2着馬)","賞金"])
   df = df.dropna(how='any')
-  print(df)
+  #print(df)
   for _, row in df.iterrows():
     race_list.append(row["レース名"])
     weather_list.append(row["天 気"])
@@ -67,4 +67,38 @@ for i in number_list:
     weight_list.append(row["馬体重"])
 
   all_list = list(zip(race_list, weather_list, popular_list, rank_list, jockey_list,distance_list, stage_list,weight_list))
-  print(all_list)
+  #print(all_list)
+
+#データの挿入
+  # 1．DBに接続する
+  con = sqlite3.connect(path + db_name)
+  # print(type(con))
+  # 2．SQLを実行するためのオブジェクトを取得
+  cur = con.cursor()
+  # 3．SQLを用意
+  # データを挿入するSQL
+  # INSERT INTO テーブル名 VALUES (列に対応したデータをカンマ区切りで);
+  sql_insert_many = "INSERT INTO arima VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+  # 4．SQLを実行
+  cur.executemany(sql_insert_many, all_list)
+  # 5．コミット処理（データ操作を反映させる）
+  con.commit()
+  # 6．DBへの接続を閉じる
+  con.close()
+
+  #DB内のデータ参照
+# 1．DBに接続する
+con = sqlite3.connect(path + db_name)
+# print(type(con))
+# 2．SQLを実行するためのオブジェクトを取得
+cur = con.cursor()
+# 3．SQLを用意
+# SELECT * FROM テーブル名;
+# *の部分は取得したい列の名前をカンマ区切りで指定することもできる
+sql_select = 'SELECT * FROM arima;'
+# 4．SQLを実行
+cur.execute(sql_select)
+for r in cur:
+  print(r)
+# 6．DBへの接続を閉じる
+con.close()
